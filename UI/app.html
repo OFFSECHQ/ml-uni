@@ -1,145 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Person Classifier</title>
+    <title>AI Sports Classifier</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="./dropzone.min.css">
     <link rel="stylesheet" href="./app.css">
 </head>
-
 <body>
-    <nav class="navbar navbar-light bg-light justify-content-center">
-        <a class="navbar-brand" href="#">ML-POWERED IMAGE ClASSIFIER</a>
+    <!-- Compact Navigation -->
+    <nav class="top-nav">
+        <div class="container">
+            <div class="nav-brand">
+                <i class="fas fa-brain"></i>
+                <span>AI Sports Classifier</span>
+            </div>
+            <div class="nav-links">
+                <a href="#upload" class="nav-link">Upload</a>
+                <a href="#samples" class="nav-link">Samples</a>
+            </div>
+        </div>
     </nav>
 
-    <div class="container">
-        <div class="row">
-        <div class="col card-wrapper" data-player="chritiano_ronaldo">
-                <div class="card border-0">
-                    <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                        <img class="w-100 h-100" src="./images/ronaldo.jpg" alt="Card image cap">
+    <!-- Main Content -->
+    <main class="container" id="upload">
+        <div class="main-grid">
+            <!-- Upload Section -->
+            <div class="section-card upload-card">
+                <div class="section-header">
+                    <i class="fas fa-upload"></i>
+                    <h2>Upload & Analyze</h2>
+                </div>
+                <form action="/file-upload" class="dropzone" id="dropzone">
+                    <div class="dz-message needsclick">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drop image here or <span class="text-accent">click to browse</span></p>
                     </div>
-                    <div class="card-body text-center mt-4">
-                        <h4 class="text-uppercase card-title">Christiano Ronaldo</h4>
-                        </p>
+                </form>
+                <button id="submitBtn" type="button" class="btn btn-primary btn-block">
+                    <span class="btn-text">Analyze Image</span>
+                    <span class="btn-loading-text" style="display: none;">Processing...</span>
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="section-card results-card">
+                <div class="section-header">
+                    <i class="fas fa-chart-bar"></i>
+                    <h2>Results</h2>
+                </div>
+                <div id="resultHolder" class="result-display">
+                    <div class="empty-state">
+                        <i class="fas fa-image"></i>
+                        <p>Upload an image to see classification results</p>
                     </div>
                 </div>
-            </div>            
-            <div class="col card-wrapper" data-player="gukesh">
-                    <div class="card border-0">
-                        <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                            <img class="w-100 h-100" src="./images/gukesh.jpg" alt="Card image cap">
-                        </div>
-                        <div class="card-body text-center mt-4">
-                            <h4 class="text-uppercase card-title">Gukesh Dommaraju</h4>
-                            </p>
-                        </div>
-                    </div>
-            </div>            
-            <div class="col card-wrapper" data-player="neeraj_chopra">
-                    <div class="card border-0">
-                        <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                            <img class="w-100 h-100" src="./images/neeraj.jpg" alt="Card image cap">
-                        </div>
-                        <div class="card-body text-center mt-4">
-                            <h4 class="text-uppercase card-title">Neeraj Chopra</h4>
-                            </p>
-                        </div>
-                    </div>
-            </div>          
-
-            <div class="col card-wrapper" data-player="pv_sindhu">
-                <div class="card border-0">
-                    <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                        <img class="w-100 h-100" src="./images/pv.jpg" alt="Card image cap">
-                    </div>
-                    <div class="card-body text-center mt-4">
-                        <h4 class="text-uppercase card-title">PV Sindhu</h4>
-                        </p>
-                    </div>
+                <div id="error" class="alert alert-danger" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Classification failed. Please try a different image.</span>
                 </div>
-            </div>      
-
-            <div class="col card-wrapper" data-player="shubhman_gill">
-                <div class="card border-0">
-                    <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                        <img class="w-100 h-100" src="./images/gill.jpg" alt="Card image cap">
-                    </div>
-                    <div class="card-body text-center mt-4">
-                        <h4 class="text-uppercase card-title">Shubman Gill</h4>
-                        </p>
-                    </div>
+                <div id="divClassTable" class="confidence-table" style="display: none;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Athlete</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Christiano Ronaldo</td><td id="score_chritiano_ronaldo"></td></tr>
+                            <tr><td>Gukesh Dommaraju</td><td id="score_gukesh"></td></tr>
+                            <tr><td>Neeraj Chopra</td><td id="score_neeraj_chopra"></td></tr>
+                            <tr><td>PV Sindhu</td><td id="score_pv_sindhu"></td></tr>
+                            <tr><td>Shubman Gill</td><td id="score_shubhman_gill"></td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
+            <!-- Sample Images -->
+            <div class="section-card samples-card" id="samples">
+                <div class="section-header">
+                    <i class="fas fa-images"></i>
+                    <h2>Try Samples</h2>
+                </div>
+                <div class="samples-grid">
+                    <div class="sample-item">
+                        <img src="./IMAGES/ronaldo.jpg" alt="Ronaldo" class="sample-img" data-search="Cristiano Ronaldo footballer">
+                        <span class="sample-name">Cristiano Ronaldo</span>
+                    </div>
+                    <div class="sample-item">
+                        <img src="./IMAGES/gukesh.jpg" alt="Gukesh" class="sample-img" data-search="Gukesh Dommaraju chess grandmaster">
+                        <span class="sample-name">Gukesh Dommaraju</span>
+                    </div>
+                    <div class="sample-item">
+                        <img src="./IMAGES/neeraj.jpg" alt="Neeraj" class="sample-img" data-search="Neeraj Chopra javelin thrower olympic">
+                        <span class="sample-name">Neeraj Chopra</span>
+                    </div>
+                    <div class="sample-item">
+                        <img src="./IMAGES/pv.jpg" alt="PV Sindhu" class="sample-img" data-search="PV Sindhu badminton player olympic">
+                        <span class="sample-name">PV Sindhu</span>
+                    </div>
+                    <div class="sample-item">
+                        <img src="./IMAGES/gill.jpg" alt="Gill" class="sample-img" data-search="Shubman Gill cricket player india">
+                        <span class="sample-name">Shubman Gill</span>
+                    </div>
+                </div>
+            </div>
         </div>
+    </main>
 
-        <div class="row">
-            <div class="col-sm-4">
-                <div class="row">
-                    <div class="col-12 mx-auto">
-                        <form action="/file-upload" class="dropzone" id="dropzone">
-                            <div class="dz-message needsclick">
-                                <img src="./images/upload.png" width="50vw" height="50vw"><br>
-                                <span class="note needsclick">Drop files here or click to upload</span>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-3 mx-auto">
-                        <button id="submitBtn" type="button" class="btn btn-success">Classify</button>
-                    </div>
-                </div>
+    <!-- Compact Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <span>&copy; 2025 AI Sports Classifier</span>
+                <span>TensorFlow • Python • OpenCV</span>
             </div>
-            
-            <div class="col-sm-8 error" id="error" >
-                <p>Can't classify image. Classifier was not able to detect face and two eyes properly</p>    
-            </div>
-
-            <div class="col-sm-4" id="resultHolder">
-            </div>
-            <!--
-            <div class="col-sm-4" id="divClassTable">
-                <table id="classTable">
-                        <tr>
-                            <th>Player</th>
-                            <th>Probability Score</th>
-                        </tr>
-                        <tr>
-                            <td>Leonel Messi</td>
-                            <td id="score_lionel_messi"></td>
-                        </tr>
-                        <tr>
-                            <td>Maria Sharapova</td>
-                            <td id="score_maria_sharapova"></td>
-                        </tr>
-                        <tr>
-                            <td>Rodger Federer</td>
-                            <td id="score_roger_federer"></td>
-                        </tr>
-                        <tr>
-                            <td>Serena Williams</td>
-                            <td id="score_serena_williams"></td>
-                        </tr>
-                        <tr>
-                            <td>Virat Kohli</td>
-                            <td id="score_virat_kohli"></td>
-                        </tr>
-                </table> 
-            </div>
-            -->
         </div>
+    </footer>
 
-    </div>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="./dropzone.min.js"></script>
+    <script src="./app.js"></script>
 </body>
-<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script src="./dropzone.min.js"></script>
-<script src="./app.js"></script>
+
 </html>
